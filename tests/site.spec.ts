@@ -336,6 +336,35 @@ test("static deep links refresh and the custom 404 returns 404", async ({
   );
 });
 
+test("fragment destinations stay aligned when local fonts arrive late", async ({
+  page,
+}) => {
+  let releaseFonts: () => void = () => {};
+  const fontGate = new Promise<void>((resolve) => {
+    releaseFonts = resolve;
+  });
+  await page.route("**/*.woff2", async (route) => {
+    await fontGate;
+    await route.continue();
+  });
+  try {
+    await page.goto("/docs/getting-started/#networking", {
+      waitUntil: "domcontentloaded",
+    });
+    releaseFonts();
+    await page.evaluate(() => document.fonts.ready);
+    await expect(
+      page.getByRole("heading", { name: "Get signalling and audio connected" }),
+    ).toBeInViewport();
+    await page.reload();
+    await expect(
+      page.getByRole("heading", { name: "Get signalling and audio connected" }),
+    ).toBeInViewport();
+  } finally {
+    releaseFonts();
+  }
+});
+
 for (const theme of ["light", "dark"] as const) {
   test(`accessible semantics and contrast in ${theme} theme`, async ({
     page,

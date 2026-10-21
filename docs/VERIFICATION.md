@@ -13,7 +13,7 @@
 | Production build                 | Ten content routes, six statically generated guides; metadata routes and custom 404 exported                                                  |
 | Windows RSC normalization        | Ten missing flat aliases created; browser prefetch requests succeed                                                                           |
 | Static export validator          | Ten pages; 469 local links/assets; canonical and social metadata, legacy anchors, sitemap, robots, 404, .nojekyll and the custom-domain CNAME |
-| Playwright                       | **26 passed, 0 failed, 0 skipped**                                                                                                            |
+| Playwright                       | **27 passed, 0 failed, 0 skipped**                                                                                                            |
 | Viewport matrix                  | Ten routes × seven widths × two themes, all pass; 375, 768, 1024, 1440, 1920, 2560, 3840px                                                    |
 | axe                              | No WCAG A/AA violations in the checked rules across ten pages in both themes and the open appearance panel                                    |
 | External links                   | **18/18** live HEAD checks return HTTP 200, including redirected source ZIP and container-package page                                        |
@@ -30,3 +30,7 @@ Interaction coverage includes native radio focus and stored themes, OS theme cha
 The original repository rejected writes, so the user selected a new repository with admin access. The original site remains unchanged. See DEPLOYMENT.md for the current domain and workflow configuration. Hosted deployment records are available in [GitHub Actions](https://github.com/ersinkoc/munasip-site/actions/workflows/pages.yml). The Pages API records the configured domain, certificate and HTTPS enforcement; those live results are checked separately from local validation.
 
 The PBX itself, SIP carrier, media paths and actual office deployment were not started or integration-tested by this website task. Website content is source-grounded, not a claim of a live telephony test.
+
+## Fragment refresh regression
+
+The first Linux CI run reproduced a fragment-refresh alignment failure (25 of 26 tests passed). Fragment navigation now re-aligns the requested target after font layout and hydration. The original deep-link assertion is unchanged; it passed five repeated local runs. A delayed-font navigation regression was added, and the complete local suite now passes 27 tests.

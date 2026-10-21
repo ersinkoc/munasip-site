@@ -4,6 +4,7 @@ import { preferenceScript } from "@/lib/preference-script";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Background } from "@/components/background";
+import { FragmentNavigation } from "@/components/fragment-navigation";
 import { site } from "@/lib/site";
 import "@fontsource-variable/space-grotesk/index.css";
 import "@fontsource-variable/jetbrains-mono/index.css";
@@ -65,6 +66,7 @@ export default function RootLayout({
       </head>
       <body>
         <PreferencesProvider>
+          <FragmentNavigation />
           <a href="#main" className="skip-link">
             Skip to content
           </a>
