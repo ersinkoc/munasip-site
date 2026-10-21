@@ -1,0 +1,361 @@
+import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
+
+const routes = [
+  "/",
+  "/download/",
+  "/brand/",
+  "/docs/",
+  "/docs/getting-started/",
+  "/docs/architecture/",
+  "/docs/ivr/",
+  "/docs/softphone/",
+  "/docs/integrations/",
+  "/docs/security/",
+];
+for (const width of [375, 768, 1024, 1440, 1920, 2560, 3840]) {
+  for (const theme of ["light", "dark"] as const) {
+    test(`${width}px ${theme}: all pages fit, render and load assets`, async ({
+      page,
+    }, info) => {
+      await page.setViewportSize({ width, height: 1000 });
+      await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
+      const errors: string[] = [];
+      page.on("pageerror", (e) => errors.push(e.message));
+      page.on("response", (response) => {
+        if (
+          response.url().startsWith("http://127.0.0.1:3000") &&
+          response.status() >= 400
+        )
+          errors.push(`${response.status()} ${response.url()}`);
+      });
+      for (const route of routes) {
+        const response = await page.goto(route);
+        expect(response?.status(), route).toBe(200);
+        await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+        await expect(page.locator("h1")).toBeVisible();
+        await page.evaluate(() => document.fonts.ready);
+        for (const picture of await page.locator("img").all()) {
+          await picture.scrollIntoViewIfNeeded();
+          await expect
+            .poll(() =>
+              picture.evaluate(
+                (element) =>
+                  element instanceof HTMLImageElement &&
+                  element.complete &&
+                  element.naturalWidth > 0,
+              ),
+            )
+            .toBe(true);
+        }
+        await page.evaluate(() =>
+          window.scrollTo({ top: 0, behavior: "instant" }),
+        );
+        expect(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth <= innerWidth,
+          ),
+          `${route} at ${width}`,
+        ).toBe(true);
+        const broken = await page
+          .locator("img")
+          .evaluateAll((images) =>
+            images
+              .filter(
+                (image) =>
+                  image instanceof HTMLImageElement &&
+                  image.complete &&
+                  image.naturalWidth === 0,
+              )
+              .map((image) => (image as HTMLImageElement).src),
+          );
+        expect(broken, route).toEqual([]);
+        expect(
+          await page.locator(".container").evaluateAll((elements) =>
+            elements.every((element) => {
+              const r = element.getBoundingClientRect();
+              return (
+                r.left >= -1 && r.right <= innerWidth + 1 && r.width <= 1721
+              );
+            }),
+          ),
+          `Container bounds ${route}`,
+        ).toBe(true);
+        if (route === "/")
+          await page.screenshot({
+            path: info.outputPath(`home-${width}-${theme}.png`),
+            fullPage: true,
+          });
+        if (route === "/docs/getting-started/" && [375, 1440].includes(width))
+          await page.screenshot({
+            path: info.outputPath(`guide-${width}-${theme}.png`),
+            fullPage: true,
+          });
+      }
+      expect(errors).toEqual([]);
+    });
+  }
+}
+
+test("appearance supports keyboard selection, persistence and system changes", async ({
+  page,
+}) => {
+  await page.emulateMedia({ colorScheme: "light" });
+  await page.goto("/");
+  const trigger = page.getByRole("button", { name: /Choose color theme/ });
+  await trigger.click();
+  await expect(
+    page.getByRole("radio", { name: "System", exact: true }),
+  ).toBeFocused();
+  await page.getByRole("radio", { name: "Dark", exact: true }).check();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.keyboard.press("Escape");
+  await expect(trigger).toBeFocused();
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await trigger.click();
+  await page.getByRole("radio", { name: "System", exact: true }).check();
+  await page.keyboard.press("Escape");
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.emulateMedia({ colorScheme: "light" });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+});
+
+test("animation preference cleans up ripples and persists across pages", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "on");
+  await page.mouse.move(400, 300);
+  await page.mouse.click(400, 300);
+  await expect(page.locator(".pointer-ripple")).toHaveCount(1);
+  await page
+    .getByRole("button", { name: "Disable background animations" })
+    .click();
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "off");
+  await expect(page.locator(".pointer-ripple")).toHaveCount(0);
+  await page.mouse.click(400, 300);
+  await expect(page.locator(".pointer-ripple")).toHaveCount(0);
+  await page.goto("/docs/");
+  await expect(
+    page.getByRole("button", { name: "Enable background animations" }),
+  ).toHaveAttribute("aria-pressed", "false");
+  await page
+    .getByRole("button", { name: "Enable background animations" })
+    .click();
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "on");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "off");
+});
+
+test("ripples expire and remain bounded", async ({ page }) => {
+  await page.goto("/");
+  for (let i = 0; i < 10; i++) await page.mouse.click(410, 350);
+  await expect
+    .poll(() => page.locator(".pointer-ripple").count())
+    .toBeLessThanOrEqual(5);
+  await expect(page.locator(".pointer-ripple")).toHaveCount(0, {
+    timeout: 3000,
+  });
+});
+
+test("background work pauses on visibility and offscreen signals", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "on");
+  await page.locator("#faq").scrollIntoViewIfNeeded();
+  await expect(page.locator(".hero-visual")).toHaveAttribute(
+    "data-offscreen",
+    "true",
+  );
+  expect(
+    await page
+      .locator(".map-signal")
+      .first()
+      .evaluate((element) => getComputedStyle(element).animationPlayState),
+  ).toBe("paused");
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", {
+      configurable: true,
+      get: () => true,
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "off");
+  await page.mouse.click(400, 300);
+  await expect(page.locator(".pointer-ripple")).toHaveCount(0);
+  await page.evaluate(() => {
+    Reflect.deleteProperty(document, "hidden");
+    document.dispatchEvent(new Event("visibilitychange"));
+  });
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "on");
+});
+
+test("preferences remain usable when persistent storage is unavailable", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    Storage.prototype.getItem = () => {
+      throw new Error("storage unavailable");
+    };
+    Storage.prototype.setItem = () => {
+      throw new Error("storage unavailable");
+    };
+  });
+  const errors: string[] = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("/");
+  await page.getByRole("button", { name: /Choose color theme/ }).click();
+  await page.getByRole("radio", { name: "Dark", exact: true }).check();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await page.keyboard.press("Escape");
+  await page
+    .getByRole("button", { name: "Disable background animations" })
+    .click();
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "off");
+  expect(errors).toEqual([]);
+});
+
+test("core product content is available without JavaScript", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  const page = await context.newPage();
+  await page.goto("/");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "Your calls.",
+  );
+  await page.getByRole("link", { name: "Get MunaSIP", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Pull the prebuilt image." }),
+  ).toBeVisible();
+  await context.close();
+});
+
+test("mobile navigation, appearance, and FAQ remain usable", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/");
+  const open = page.getByRole("button", { name: "Open navigation" });
+  await open.click();
+  await expect(
+    page.getByRole("navigation", { name: "Main navigation" }),
+  ).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(open).toBeFocused();
+  await open.click();
+  await page
+    .getByRole("navigation", { name: "Main navigation" })
+    .getByRole("link", { name: "Documentation" })
+    .click();
+  await expect(page).toHaveURL(/\/docs\/$/);
+  await expect(open).toHaveAttribute("aria-expanded", "false");
+  await page.goto("/");
+  await page.getByRole("button", { name: /Choose color theme/ }).click();
+  const bounds = await page.locator("#appearance-panel").boundingBox();
+  expect(bounds!.x).toBeGreaterThanOrEqual(0);
+  expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(375);
+  await page.keyboard.press("Escape");
+  await page.locator("summary").first().click();
+  await expect(page.locator("details").first()).toHaveAttribute("open", "");
+});
+
+test("screen tabs work with keyboard and route choices update the explanation", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("tab", { name: "Live dashboard" }).focus();
+  await page.keyboard.press("ArrowDown");
+  await expect(page.getByRole("tab", { name: "Visual IVR" })).toBeFocused();
+  await expect(page.getByRole("tabpanel")).toContainText(
+    "A clear path for every caller.",
+  );
+  for (const name of [
+    "Call logs",
+    "Queues",
+    "Extensions",
+    "Reports",
+    "Settings & SSL",
+  ]) {
+    await page.getByRole("tab", { name, exact: true }).click();
+    await expect(page.getByRole("tab", { name, exact: true })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    await expect(page.getByRole("tabpanel").locator("img")).toBeVisible();
+  }
+  await page.getByRole("button", { name: "01 Sales" }).click();
+  await expect(page.locator(".route-description")).toContainText(
+    "extension 201",
+  );
+  await page.getByRole("button", { name: "03 After hours" }).click();
+  await expect(page.locator(".route-description")).toContainText("voicemail");
+});
+
+test("copy buttons copy the exact install command and handle denied clipboard", async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+  await page.goto("/download/");
+  await page.getByRole("button", { name: "Copy install MunaSIP" }).click();
+  await expect(page.getByRole("status")).toContainText("Copied to clipboard");
+  const clipboard = await page.evaluate(() => navigator.clipboard.readText());
+  expect(clipboard).toContain("ghcr.io/munasip/munasip:1.6.0");
+  expect(clipboard).toContain("-v munasip-data:/data");
+  await page.evaluate(() => {
+    Object.defineProperty(navigator.clipboard, "writeText", {
+      configurable: true,
+      value: () => Promise.reject(new Error("denied")),
+    });
+  });
+  await page.getByRole("button", { name: "Copy install MunaSIP" }).click();
+  await expect(page.getByRole("status")).toContainText("Clipboard unavailable");
+  expect(
+    await page.evaluate(() => window.getSelection()?.toString()),
+  ).toContain("docker run");
+});
+
+test("static deep links refresh and the custom 404 returns 404", async ({
+  page,
+}) => {
+  await page.goto("/docs/getting-started/#networking");
+  const response = await page.reload();
+  expect(response?.status()).toBe(200);
+  await expect(
+    page.getByRole("heading", { name: "Get signalling and audio connected" }),
+  ).toBeInViewport();
+  const missing = await page.goto("/there-is-no-such-route/");
+  expect(missing?.status()).toBe(404);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(
+    "A missed connection",
+  );
+});
+
+for (const theme of ["light", "dark"] as const) {
+  test(`accessible semantics and contrast in ${theme} theme`, async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
+    for (const route of routes) {
+      await page.goto(route);
+      const results = await new AxeBuilder({ page })
+        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+        .analyze();
+      expect(results.violations, route).toEqual([]);
+    }
+    await page.goto("/");
+    await page.getByRole("button", { name: /Choose color theme/ }).click();
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+  });
+}

@@ -1,3 +1,86 @@
-# munasip.github.io
+# MunaSIP website
 
-Published automatically from [MunaSIP/MunaSIP](https://github.com/MunaSIP/MunaSIP) `site/` — edit it there.
+The English product site for the open-source [MunaSIP PBX](https://github.com/MunaSIP/MunaSIP). Next.js App Router and TypeScript, statically exported from **[ersinkoc/munasip-site](https://github.com/ersinkoc/munasip-site)** to GitHub Pages.
+
+Public address: **https://munasip.oxog.dev/**. The custom domain serves the site at the root, so no repository base path is used. See [deployment configuration](docs/DEPLOYMENT.md).
+
+## Local development
+
+Use **Node 26.12.1** and **pnpm 12.14.0**; `.node-version`, package metadata and CI agree.
+
+```sh
+npm install --global pnpm@12.14.0
+pnpm install --frozen-lockfile
+pnpm dev
+```
+
+Development opens at <http://127.0.0.1:3000/>. To inspect the real static output:
+
+```sh
+pnpm build
+pnpm preview
+```
+
+Preview serves `out/`, with directory-index routes and real HTTP 404 responses. Hosting requires no application backend.
+
+The implementation machine has a workspace-local, ignored Node runtime under `.tools/`. PowerShell example:
+
+```powershell
+$env:Path = (Join-Path $PWD '.tools/node-v26.12.1-win-x64') + ';' + $env:Path
+npm exec --yes --package=pnpm@12.14.0 -- pnpm dev
+```
+
+## Verification
+
+```sh
+pnpm peers check
+pnpm format:check
+pnpm lint
+pnpm typecheck
+pnpm build
+pnpm check:export
+pnpm exec playwright install chromium
+pnpm test
+pnpm check:links
+```
+
+Browser checks cover ten routes at 375, 768, 1024, 1440, 1920, 2560 and 3840px in both themes: viewport overflow, resources, theme persistence/system changes, reduced motion, ripple lifecycle, mobile navigation, keyboard screen tabs, route choices, clipboard success/failure, direct links and refresh. axe checks all pages and the appearance panel for WCAG A/AA semantics and contrast. Reports and screenshots are ignored local artifacts.
+
+`check:export` validates canonical URLs, old anchors, local links/assets, sitemap, robots, `.nojekyll`, the custom-domain CNAME and 404. `check:links` separately verifies external destinations with live HEAD requests.
+
+Windows builds currently reproduce [Next #85374](https://github.com/vercel/next.js/issues/85374). A post-export script creates the flat RSC segment filenames requested by the client. Framework source is untouched; correct Linux output is unchanged.
+
+## Content and design
+
+- Home, downloads, brand assets, documentation index and six full guides.
+- Original SVG logos, social PNG, Apple icon and real project captures preserved at their old URLs. Some captures retain the earlier DSip name and are labelled project captures.
+- Locally served Space Grotesk and JetBrains Mono, with Latin/Turkish coverage. Central variables include the requested Quicksand token; no unnecessary third font is loaded.
+- Shared fluid container up to 1720px, centralized spacing and 4/6/8px component corners, light/dark tokens.
+- Light, Dark and System appearance tiles with native radio behavior, persistent preferences and an early theme script.
+- Mouse-icon animation control; continuous SVG background, pointer response and bounded click ripples. Listeners/frames stop when off, reduced motion is requested or the tab is hidden. Offscreen diagram motion pauses.
+- Original call-route SVG, Compose service map, clear example labels and a genuine screen gallery. No live PBX calls or microphone requests.
+- [Research record](docs/RESEARCH.md) covers official sources, corrected legacy claims, hosting, design references and version compatibility decisions.
+
+## Structure
+
+```text
+src/app/           Routes, metadata, sitemap, robots and CSS tokens
+src/components/    Preferences, navigation, SVGs, gallery and code controls
+src/lib/           Product facts, guide content and navigation
+public/brand/      Original vector marks, favicon and sharing images
+public/images/     Original WebP product captures
+legacy/            Preserved original website source (not deployed)
+scripts/           Preview server, export normalization and link checks
+tests/             Production-export browser verification
+.github/workflows/ Source checks, build and Pages deployment
+```
+
+Update the release and download links in `src/lib/site.ts`, then review article facts against the official product sources.
+
+## Deployment and ownership
+
+Push to `main` in `ersinkoc/munasip-site` to run source checks, build, browser verification and Pages deployment. The workflow uploads only `out/`, using official Actions pinned to SHAs. DNS uses `CNAME munasip.oxog.dev → ersinkoc.github.io`; the same domain is set in repository Pages settings and `public/CNAME`.
+
+The original `MunaSIP/munasip.github.io` repository is retained as the local `upstream` remote and is not modified. Its legacy publisher targets that separate repository and cannot overwrite this website. Original source and licensing are preserved.
+
+MunaSIP is MIT licensed. Original product and brand copyright: **2026 diggyen**. See the [official project](https://github.com/MunaSIP/MunaSIP) for current development and contribution guidance.
