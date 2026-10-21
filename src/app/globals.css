@@ -937,7 +937,7 @@ h1 > span {
   letter-spacing: -0.04em;
 }
 
-/* Product tour. Images retain their original, legible product UI. */
+/* Product tour and vector interface illustrations. */
 .screen-tour {
   display: grid;
   grid-template-columns: 225px minmax(0, 1fr);
@@ -948,6 +948,7 @@ h1 > span {
   box-shadow: 0 8px 40px #153d2510;
 }
 .tour-sidebar {
+  min-width: 0;
   padding: 28px 16px;
   border-right: 1px solid var(--line);
   display: flex;
@@ -1051,38 +1052,201 @@ h1 > span {
   border-radius: 50%;
   background: var(--line-strong);
 }
-.screenshot-link {
-  display: block;
-  position: relative;
-  background: var(--code-bg);
+.product-mockup {
+  width: 100%;
+  overflow: hidden;
+  background: var(--bg);
 }
-.product-screenshot {
+.product-mockup > svg {
   width: 100%;
   height: auto;
 }
-.expand-screen {
-  position: absolute;
-  bottom: 14px;
-  right: 14px;
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  padding: 6px 10px;
-  font-size: 10px;
-  border-radius: 4px;
-  background: #0b1411e8;
-  color: #e8f0e9;
-  border: 1px solid #425c4b;
-  opacity: 0;
-  transition: opacity 180ms;
+.mockup-base {
+  fill: var(--bg);
 }
-.screenshot-link:hover .expand-screen,
-.screenshot-link:focus-visible .expand-screen {
-  opacity: 1;
+.mockup-sidebar {
+  fill: var(--surface);
 }
-.expand-screen .icon {
-  width: 12px;
-  height: 12px;
+.mockup-card {
+  fill: var(--surface);
+  stroke: var(--line);
+}
+.mockup-text {
+  fill: var(--text);
+  font-family: var(--font-space-grotesk);
+}
+.mockup-text.strong {
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+.mockup-text.muted {
+  fill: var(--muted);
+}
+.mockup-text.accent {
+  fill: var(--accent);
+}
+.mockup-text.warning {
+  fill: var(--warning);
+}
+.mockup-text.code {
+  fill: var(--accent);
+  font-family: var(--font-jetbrains);
+}
+.mockup-grid {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+}
+.mockup-canvas-grid {
+  opacity: 0.45;
+}
+.mockup-avatar,
+.mockup-pill.accent {
+  fill: var(--surface-accent);
+}
+.mockup-pill.muted,
+.mockup-input {
+  fill: var(--surface-soft);
+  stroke: var(--line);
+}
+.mockup-pill.warning {
+  fill: var(--surface-soft);
+  stroke: var(--warning);
+  stroke-opacity: 0.4;
+}
+.mockup-logo,
+.mockup-wave,
+.mockup-meter,
+.mockup-bar,
+.mockup-beacon {
+  fill: var(--accent);
+}
+.mockup-logo-mark {
+  fill: none;
+  stroke: var(--on-accent);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.mockup-nav-icon {
+  fill: none;
+  stroke: var(--muted);
+}
+.mockup-track {
+  fill: var(--line);
+}
+.mockup-chart-area {
+  fill: var(--accent);
+  opacity: 0.08;
+}
+.mockup-chart-line,
+.mockup-chart-secondary {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+.mockup-chart-secondary {
+  stroke: var(--muted);
+  opacity: 0.5;
+  stroke-dasharray: 3 6;
+  stroke-width: 1.5;
+}
+.mockup-wires,
+.mockup-flow {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 2;
+}
+.mockup-flow {
+  stroke: var(--accent);
+  stroke-dasharray: 8 20;
+  animation: mockup-route 3s linear infinite;
+}
+.mockup-port {
+  fill: var(--surface);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.mockup-ring-track,
+.mockup-ring {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 14;
+}
+.mockup-ring {
+  stroke: var(--accent);
+  stroke-linecap: round;
+  stroke-dasharray: 430 566;
+  transform: rotate(-90deg);
+  transform-origin: 170px 204px;
+  animation: mockup-status 5s ease-in-out infinite;
+}
+.mockup-check {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  animation: mockup-status 4s ease-in-out infinite;
+}
+.mockup-beacon {
+  animation: mockup-status 3.2s ease-in-out infinite;
+}
+.mockup-wave {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: mockup-audio 1.4s ease-in-out infinite alternate;
+}
+.mockup-meter,
+.mockup-bar {
+  transform-box: fill-box;
+  transform-origin: left bottom;
+  animation: mockup-level 5s ease-in-out infinite;
+}
+.mockup-bar {
+  transform-origin: center bottom;
+}
+[data-motion="off"] .mockup-motion,
+[data-offscreen="true"] .mockup-motion {
+  animation-play-state: paused;
+}
+@keyframes mockup-route {
+  to {
+    stroke-dashoffset: -112;
+  }
+}
+@keyframes mockup-status {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+@keyframes mockup-audio {
+  from {
+    transform: scaleY(0.45);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes mockup-level {
+  0%,
+  100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0.82);
+  }
+}
+.softphone-image .product-mockup {
+  max-width: 420px;
+  margin-inline: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
 }
 .tour-panel-caption {
   display: flex;
@@ -1314,12 +1478,6 @@ figcaption {
   gap: 10px;
   margin-bottom: 24px;
   color: var(--accent);
-}
-.softphone-image img {
-  width: min(100%, 472px);
-  margin-inline: auto;
-  border: 1px solid var(--line-strong);
-  border-radius: 4px;
 }
 .softphone-image figcaption {
   text-align: center;
@@ -2649,7 +2807,7 @@ figcaption {
     margin-bottom: 18px;
   }
   .screen-tour {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
   .tour-sidebar {
     padding: 12px;

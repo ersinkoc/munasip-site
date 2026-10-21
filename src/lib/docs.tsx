@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { ProductMockup } from "@/components/product-mockup";
 import Link from "next/link";
 import { Architecture } from "@/components/architecture";
 import { CodeBlock } from "@/components/code-block";
@@ -441,14 +441,9 @@ export const docs: Record<
               draft is separate from the published version used by live calls.
             </p>
             <figure className="image-frame">
-              <Image
-                src="/images/ivr-designer.webp"
-                alt="MunaSIP flow designer showing a real Main line IVR with speech, menu, API and branch nodes"
-                width={1440}
-                height={900}
-              />
+              <ProductMockup screen="ivr-designer" />
               <figcaption>
-                Real project screen. Demo values describe a sample flow.
+                Animated interface concept. Demo values describe a sample flow.
               </figcaption>
             </figure>
           </>
@@ -514,12 +509,7 @@ export const docs: Record<
               title="API node mapping"
             />
             <figure className="image-frame">
-              <Image
-                src="/images/ivr-api-settings.webp"
-                alt="Real API request node settings: request method, authentication, timeout and response mappings"
-                width={1440}
-                height={900}
-              />
+              <ProductMockup screen="ivr-api-settings" />
               <figcaption>
                 Configure the request and test the mapped values in the
                 designer.
@@ -634,14 +624,9 @@ export const docs: Record<
               are idle, busy or on DND.
             </p>
             <figure className="image-frame">
-              <Image
-                src="/images/softphone.webp"
-                alt="MunaSIP employee portal with browser dialpad and extension call controls"
-                width={472}
-                height={674}
-              />
+              <ProductMockup screen="softphone" />
               <figcaption>
-                Actual portal screen with sample extension data.
+                Animated portal concept with illustrative extension data.
               </figcaption>
             </figure>
             <p>

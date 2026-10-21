@@ -17,16 +17,14 @@ for (const width of [375, 768, 1024, 1440, 1920, 2560, 3840]) {
   for (const theme of ["light", "dark"] as const) {
     test(`${width}px ${theme}: all pages fit, render and load assets`, async ({
       page,
+      baseURL,
     }, info) => {
       await page.setViewportSize({ width, height: 1000 });
       await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
       const errors: string[] = [];
       page.on("pageerror", (e) => errors.push(e.message));
       page.on("response", (response) => {
-        if (
-          response.url().startsWith("http://127.0.0.1:3000") &&
-          response.status() >= 400
-        )
+        if (response.url().startsWith(baseURL!) && response.status() >= 400)
           errors.push(`${response.status()} ${response.url()}`);
       });
       for (const route of routes) {
@@ -70,6 +68,15 @@ for (const width of [375, 768, 1024, 1440, 1920, 2560, 3840]) {
               .map((image) => (image as HTMLImageElement).src),
           );
         expect(broken, route).toEqual([]);
+        expect(
+          await page.locator(".product-mockup").evaluateAll((elements) =>
+            elements.every((element) => {
+              const box = element.getBoundingClientRect();
+              return box.left >= -1 && box.right <= innerWidth + 1;
+            }),
+          ),
+          `Mockup bounds ${route} at ${width}`,
+        ).toBe(true);
         expect(
           await page.locator(".container").evaluateAll((elements) =>
             elements.every((element) => {
@@ -354,7 +361,9 @@ test("screen tabs work with keyboard and route choices update the explanation", 
       "aria-selected",
       "true",
     );
-    await expect(page.getByRole("tabpanel").locator("img")).toBeVisible();
+    await expect(
+      page.getByRole("tabpanel").locator("svg[role='img']"),
+    ).toBeVisible();
   }
   await page.getByRole("button", { name: "01 Sales" }).click();
   await expect(page.locator(".route-description")).toContainText(
@@ -362,6 +371,45 @@ test("screen tabs work with keyboard and route choices update the explanation", 
   );
   await page.getByRole("button", { name: "03 After hours" }).click();
   await expect(page.locator(".route-description")).toContainText("voicemail");
+});
+
+test("SVG interface mockups animate independently of mouse effects and respect motion limits", async ({
+  page,
+}) => {
+  const captures: string[] = [];
+  page.on("request", (request) => {
+    if (/\/images\/.*\.webp/.test(request.url())) captures.push(request.url());
+  });
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  await page.getByRole("button", { name: "Disable mouse effects" }).click();
+  const panel = page.getByRole("tabpanel");
+  await panel.scrollIntoViewIfNeeded();
+  const animation = panel.locator(".mockup-motion").first();
+  await expect(animation).toHaveCSS("animation-play-state", "running");
+  const start = await animation.evaluate((element) =>
+    Number(element.getAnimations()[0].currentTime),
+  );
+  await expect
+    .poll(() =>
+      animation.evaluate((element) =>
+        Number(element.getAnimations()[0].currentTime),
+      ),
+    )
+    .toBeGreaterThan(start + 100);
+  await page.locator("#faq").scrollIntoViewIfNeeded();
+  await expect(animation).toHaveCSS("animation-play-state", "paused");
+  await panel.scrollIntoViewIfNeeded();
+  await expect(animation).toHaveCSS("animation-play-state", "running");
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(animation).toHaveCSS("animation-name", "none");
+  for (const path of ["/docs/ivr/", "/docs/softphone/"]) {
+    await page.goto(path);
+    const mockups = page.locator(".product-mockup svg[role='img']");
+    await expect(mockups.first()).toBeVisible();
+    expect(await mockups.count()).toBe(path.includes("ivr") ? 2 : 1);
+  }
+  expect(captures).toEqual([]);
 });
 
 test("copy buttons copy the exact install command and handle denied clipboard", async ({

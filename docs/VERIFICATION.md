@@ -12,8 +12,8 @@
 | Formatting / ESLint / TypeScript | Passed                                                                                                                                        |
 | Production build                 | Ten content routes, six statically generated guides; metadata routes and custom 404 exported                                                  |
 | Windows RSC normalization        | Ten missing flat aliases created; browser prefetch requests succeed                                                                           |
-| Static export validator          | Ten pages; 469 local links/assets; canonical and social metadata, legacy anchors, sitemap, robots, 404, .nojekyll and the custom-domain CNAME |
-| Playwright                       | **28 passed, 0 failed, 0 skipped**                                                                                                            |
+| Static export validator          | Ten pages; 460 local links/assets; canonical and social metadata, legacy anchors, sitemap, robots, 404, .nojekyll and the custom-domain CNAME |
+| Playwright                       | **29 passed, 0 failed, 0 skipped**                                                                                                            |
 | Viewport matrix                  | Ten routes × seven widths × two themes, all pass; 375, 768, 1024, 1440, 1920, 2560, 3840px                                                    |
 | axe                              | No WCAG A/AA violations in the checked rules across ten pages in both themes and the open appearance panel                                    |
 | External links                   | **18/18** live HEAD checks return HTTP 200, including redirected source ZIP and container-package page                                        |
@@ -38,3 +38,7 @@ The first Linux CI run reproduced a fragment-refresh alignment failure (25 of 26
 ## Mouse effects regression
 
 The mouse toggle previously paused all continuous animations. A regression reproduced that behavior before the fix. Pointer effects now use a separate control; the existing stored preference is preserved. Browser checks confirm background pulses and call-map animation timelines advance with mouse effects off, pointer glow/parallax/ripples stop, and the preference survives reload and navigation. The early preference script is also checked with application scripts blocked. Reduced-motion and visibility controls still pause both kinds of effects. The complete updated local suite passes 28 tests.
+
+## Animated SVG interfaces
+
+Nine inline SVG interface concepts replace displayed product captures across the homepage and guides. Legacy image URLs remain available. The seven gallery tabs, IVR flow/API illustrations and softphone use the active theme. SVG animation timelines advance with mouse effects disabled, pause offscreen or in hidden tabs, and stop under reduced motion. A browser check confirms the illustrated pages no longer request product WebP captures. Mobile and desktop renders in both themes were visually reviewed. The existing console-error assertions caught an SVG title hydration mismatch; a single text value fixed it, and the full suite passes 29 tests with those assertions unchanged.

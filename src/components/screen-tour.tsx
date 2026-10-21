@@ -1,10 +1,17 @@
 "use client";
 
-import Image from "next/image";
 import { useRef, useState } from "react";
 import { Icon } from "./icon";
+import { ProductMockup, type MockupScreen } from "./product-mockup";
 
-const screens = [
+const screens: {
+  name: string;
+  file: MockupScreen;
+  icon: string;
+  title: string;
+  text: string;
+  alt: string;
+}[] = [
   {
     name: "Live dashboard",
     file: "dashboard",
@@ -111,9 +118,9 @@ export function ScreenTour() {
           ))}
         </div>
         <div className="screen-caption">
-          <span className="status-dot" /> Real product screens.
+          <span className="status-dot" /> A closer look, in motion.
           <br />
-          <span>Upstream sample captures.</span>
+          <span>Illustrative interface mockups.</span>
         </div>
       </div>
       <div
@@ -132,27 +139,13 @@ export function ScreenTour() {
           <span>
             <Icon name="shield" /> your-pbx / admin / {screen.file}
           </span>
-          <span className="screen-version">PROJECT CAPTURE</span>
+          <span className="screen-version">INTERFACE CONCEPT</span>
         </div>
-        <a
-          className="screenshot-link"
-          href={`/images/${screen.file}.webp`}
-          target="_blank"
-          rel="noreferrer"
-          aria-label={`Open full-size ${screen.name} screenshot`}
-        >
-          <Image
-            src={`/images/${screen.file}.webp`}
-            alt={screen.alt}
-            width={1440}
-            height={900}
-            className="product-screenshot"
-            sizes="(max-width: 800px) 100vw, 80vw"
-          />
-          <span className="expand-screen">
-            <Icon name="external" /> View full size
-          </span>
-        </a>
+        <ProductMockup
+          key={screen.file}
+          screen={screen.file}
+          label={`${screen.alt} — illustrative animated mockup`}
+        />
         <div className="tour-panel-caption">
           <div>
             <h3>{screen.title}</h3>

@@ -53,7 +53,7 @@ Windows builds currently reproduce [Next #85374](https://github.com/vercel/next.
 ## Content and design
 
 - Home, downloads, brand assets, documentation index and six full guides.
-- Original SVG logos, social PNG, Apple icon and real project captures preserved at their old URLs. Some captures retain the earlier DSip name and are labelled project captures.
+- Original SVG logos, social PNG, Apple icon and legacy project captures preserved at their old URLs. The website presents nine theme-aware SVG interface mockups instead of screenshots, with call flows, audio waves and activity indicators. They use illustrative sample data.
 - Locally served Space Grotesk and JetBrains Mono, with Latin/Turkish coverage. Central variables include the requested Quicksand token; no unnecessary third font is loaded.
 - Shared fluid container up to 1720px, centralized spacing and 4/6/8px component corners, light/dark tokens.
 - Light, Dark and System appearance tiles with native radio behavior, persistent preferences and an early theme script.
@@ -69,6 +69,7 @@ src/components/    Preferences, navigation, SVGs, gallery and code controls
 src/lib/           Product facts, guide content and navigation
 public/brand/      Original vector marks, favicon and sharing images
 public/images/     Original WebP product captures
+src/components/product-mockup.tsx  Animated SVG interface concepts
 legacy/            Preserved original website source (not deployed)
 scripts/           Preview server, export normalization and link checks
 tests/             Production-export browser verification

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Image from "next/image";
+import { ProductMockup } from "@/components/product-mockup";
 import { Icon } from "@/components/icon";
 import { CallMap } from "@/components/call-map";
 import { ScreenTour } from "@/components/screen-tour";
@@ -179,8 +179,7 @@ export default function Home() {
         </div>
         <ScreenTour />
         <p className="small muted" style={{ marginTop: 14 }}>
-          Project screenshots use sample data; some retain the earlier DSip
-          name.
+          Animated interface concepts with illustrative sample data.
         </p>
       </section>
 
@@ -243,21 +242,9 @@ export default function Home() {
           <figure className="image-frame ivr-main-image">
             <div className="frame-label mono">
               <Icon name="flow" /> THE VISUAL FLOW DESIGNER{" "}
-              <span>REAL PRODUCT SCREEN</span>
+              <span>ANIMATED MOCKUP</span>
             </div>
-            <a
-              href="/images/ivr-designer.webp"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Image
-                src="/images/ivr-designer.webp"
-                alt="Real MunaSIP Main line flow: a welcome menu branches to sales, a support queue and a live API lookup"
-                width={1440}
-                height={900}
-                sizes="(max-width: 900px) 100vw, 70vw"
-              />
-            </a>
+            <ProductMockup screen="ivr-designer" />
             <figcaption>
               Build, test and publish. Live calls keep the flow version they
               started with.
@@ -364,16 +351,10 @@ export default function Home() {
             <span className="mono image-kicker">
               <span className="status-dot" /> YOUR EXTENSION. ANY DESK.
             </span>
-            <a href="/images/softphone.webp" target="_blank" rel="noreferrer">
-              <Image
-                src="/images/softphone.webp"
-                alt="Actual MunaSIP portal softphone: extension 101 with keypad, recent calls, DND and call controls"
-                width={472}
-                height={674}
-                sizes="(max-width: 900px) 100vw, 50vw"
-              />
-            </a>
-            <figcaption>Real portal screen · sample extension data</figcaption>
+            <ProductMockup screen="softphone" phoneOnly />
+            <figcaption>
+              Browser softphone · animated interface concept
+            </figcaption>
           </figure>
         </div>
       </section>
