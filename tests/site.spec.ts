@@ -122,7 +122,7 @@ test("appearance supports keyboard selection, persistence and system changes", a
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
 });
 
-test("animation preference cleans up ripples and persists across pages", async ({
+test("mouse effects toggle preserves normal animations and persists across pages", async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: "no-preference" });
@@ -131,23 +131,81 @@ test("animation preference cleans up ripples and persists across pages", async (
   await page.mouse.move(400, 300);
   await page.mouse.click(400, 300);
   await expect(page.locator(".pointer-ripple")).toHaveCount(1);
-  await page
-    .getByRole("button", { name: "Disable background animations" })
-    .click();
-  await expect(page.locator("html")).toHaveAttribute("data-motion", "off");
+  await page.getByRole("button", { name: "Disable mouse effects" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "on");
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-pointer-effects",
+    "off",
+  );
   await expect(page.locator(".pointer-ripple")).toHaveCount(0);
+  await expect(page.locator(".pointer-glow")).toBeHidden();
+  for (const selector of [".ambient-pulses", ".map-signal"]) {
+    const animation = page.locator(selector).first();
+    await expect(animation).toHaveCSS("animation-play-state", "running");
+    const start = await animation.evaluate((element) =>
+      Number(element.getAnimations()[0].currentTime),
+    );
+    await expect
+      .poll(() =>
+        animation.evaluate((element) =>
+          Number(element.getAnimations()[0].currentTime),
+        ),
+      )
+      .toBeGreaterThan(start + 100);
+  }
+  await page.mouse.move(600, 400);
   await page.mouse.click(400, 300);
   await expect(page.locator(".pointer-ripple")).toHaveCount(0);
+  await expect(page.locator(".ambient > svg > g")).not.toHaveAttribute(
+    "transform",
+  );
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-pointer-effects",
+    "off",
+  );
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "on");
   await page.goto("/docs/");
   await expect(
-    page.getByRole("button", { name: "Enable background animations" }),
+    page.getByRole("button", { name: "Enable mouse effects" }),
   ).toHaveAttribute("aria-pressed", "false");
-  await page
-    .getByRole("button", { name: "Enable background animations" })
-    .click();
+  await page.getByRole("button", { name: "Enable mouse effects" }).click();
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-pointer-effects",
+    "on",
+  );
   await expect(page.locator("html")).toHaveAttribute("data-motion", "on");
+  await page.mouse.click(400, 300);
+  await expect(page.locator(".pointer-ripple")).toHaveCount(1);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator("html")).toHaveAttribute("data-motion", "off");
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-pointer-effects",
+    "off",
+  );
+  await expect(page.locator(".pointer-ripple")).toHaveCount(0);
+});
+
+test("saved mouse preference leaves normal motion enabled before hydration", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.addInitScript(() => localStorage.setItem("munasip-motion", "off"));
+  await page.route("**/_next/static/**/*.js", (route) => route.abort());
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-pointer-effects",
+    "off",
+  );
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "on");
+  await expect(page.locator(".ambient-pulses")).toHaveCSS(
+    "animation-play-state",
+    "running",
+  );
+  await expect(page.locator(".map-signal").first()).toHaveCSS(
+    "animation-play-state",
+    "running",
+  );
 });
 
 test("ripples expire and remain bounded", async ({ page }) => {
@@ -185,6 +243,10 @@ test("background work pauses on visibility and offscreen signals", async ({
     document.dispatchEvent(new Event("visibilitychange"));
   });
   await expect(page.locator("html")).toHaveAttribute("data-motion", "off");
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-pointer-effects",
+    "off",
+  );
   await page.mouse.click(400, 300);
   await expect(page.locator(".pointer-ripple")).toHaveCount(0);
   await page.evaluate(() => {
@@ -192,6 +254,10 @@ test("background work pauses on visibility and offscreen signals", async ({
     document.dispatchEvent(new Event("visibilitychange"));
   });
   await expect(page.locator("html")).toHaveAttribute("data-motion", "on");
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-pointer-effects",
+    "on",
+  );
 });
 
 test("preferences remain usable when persistent storage is unavailable", async ({
@@ -212,10 +278,12 @@ test("preferences remain usable when persistent storage is unavailable", async (
   await page.getByRole("radio", { name: "Dark", exact: true }).check();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await page.keyboard.press("Escape");
-  await page
-    .getByRole("button", { name: "Disable background animations" })
-    .click();
-  await expect(page.locator("html")).toHaveAttribute("data-motion", "off");
+  await page.getByRole("button", { name: "Disable mouse effects" }).click();
+  await expect(page.locator("html")).toHaveAttribute(
+    "data-pointer-effects",
+    "off",
+  );
+  await expect(page.locator("html")).toHaveAttribute("data-motion", "on");
   expect(errors).toEqual([]);
 });
 

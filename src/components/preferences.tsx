@@ -24,6 +24,8 @@ function apply() {
   document.documentElement.dataset.theme =
     theme === "system" ? (dark === "true" ? "dark" : "light") : theme;
   document.documentElement.dataset.motion =
+    reduced === "false" && hidden === "false" ? "on" : "off";
+  document.documentElement.dataset.pointerEffects =
     motion === "true" && reduced === "false" && hidden === "false"
       ? "on"
       : "off";

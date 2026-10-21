@@ -384,7 +384,7 @@ td code {
 [data-offscreen="true"] .signal {
   animation-play-state: paused;
 }
-[data-motion="off"] .pointer-glow {
+[data-pointer-effects="off"] .pointer-glow {
   display: none;
 }
 

@@ -57,7 +57,7 @@ Windows builds currently reproduce [Next #85374](https://github.com/vercel/next.
 - Locally served Space Grotesk and JetBrains Mono, with Latin/Turkish coverage. Central variables include the requested Quicksand token; no unnecessary third font is loaded.
 - Shared fluid container up to 1720px, centralized spacing and 4/6/8px component corners, light/dark tokens.
 - Light, Dark and System appearance tiles with native radio behavior, persistent preferences and an early theme script.
-- Mouse-icon animation control; continuous SVG background, pointer response and bounded click ripples. Listeners/frames stop when off, reduced motion is requested or the tab is hidden. Offscreen diagram motion pauses.
+- Mouse-icon control for pointer response and bounded click ripples. Turning mouse effects off removes their listeners/frames while continuous background and diagram animations keep running. Reduced motion and hidden tabs pause all effects; offscreen diagram motion pauses.
 - Original call-route SVG, Compose service map, clear example labels and a genuine screen gallery. No live PBX calls or microphone requests.
 - [Research record](docs/RESEARCH.md) covers official sources, corrected legacy claims, hosting, design references and version compatibility decisions.
 

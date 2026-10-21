@@ -202,17 +202,15 @@ export function Header() {
             type="button"
             className="icon-button motion-toggle"
             aria-label={
-              motion
-                ? "Disable background animations"
-                : "Enable background animations"
+              motion ? "Disable mouse effects" : "Enable mouse effects"
             }
             aria-pressed={motion}
             title={
               reduced
-                ? "Your system prefers reduced motion. Effects stay paused."
+                ? "Your system prefers reduced motion. Mouse effects stay paused."
                 : motion
-                  ? "Background animations on — click to pause"
-                  : "Background animations off — click to enable"
+                  ? "Mouse effects on — click to disable"
+                  : "Mouse effects off — click to enable"
             }
             onClick={toggleMotion}
           >

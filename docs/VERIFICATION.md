@@ -13,7 +13,7 @@
 | Production build                 | Ten content routes, six statically generated guides; metadata routes and custom 404 exported                                                  |
 | Windows RSC normalization        | Ten missing flat aliases created; browser prefetch requests succeed                                                                           |
 | Static export validator          | Ten pages; 469 local links/assets; canonical and social metadata, legacy anchors, sitemap, robots, 404, .nojekyll and the custom-domain CNAME |
-| Playwright                       | **27 passed, 0 failed, 0 skipped**                                                                                                            |
+| Playwright                       | **28 passed, 0 failed, 0 skipped**                                                                                                            |
 | Viewport matrix                  | Ten routes × seven widths × two themes, all pass; 375, 768, 1024, 1440, 1920, 2560, 3840px                                                    |
 | axe                              | No WCAG A/AA violations in the checked rules across ten pages in both themes and the open appearance panel                                    |
 | External links                   | **18/18** live HEAD checks return HTTP 200, including redirected source ZIP and container-package page                                        |
@@ -23,7 +23,7 @@
 
 The browser matrix waits for fonts and loads every HTML image, checks viewport and container bounds, checks direct responses and records missing resources/page errors. It saves full homepage captures for each width/theme and complete installation-guide captures at mobile and desktop sizes. Final hero images at all seven widths were visually reviewed, along with mobile/desktop lower-page samples, footer, the appearance menu and the directly opened guide.
 
-Interaction coverage includes native radio focus and stored themes, OS theme changes, reduced motion, cleanup when motion is disabled, bounded/expired ripples, offscreen diagrams, mobile menu/Escape, keyboard gallery tabs, route descriptions, clipboard success and denied-clipboard fallback, failed-storage fallback, JavaScript-disabled core content, direct guide refresh and a real HTTP 404. Visibility behavior is tested with controlled visibility signals; this is not a CPU or battery benchmark.
+Interaction coverage includes native radio focus and stored themes, OS theme changes, reduced motion, pointer cleanup when mouse effects are disabled while background/diagram animations continue, bounded/expired ripples, offscreen diagrams, mobile menu/Escape, keyboard gallery tabs, route descriptions, clipboard success and denied-clipboard fallback, failed-storage fallback, JavaScript-disabled core content, direct guide refresh and a real HTTP 404. Visibility behavior is tested with controlled visibility signals; this is not a CPU or battery benchmark.
 
 ## Publication verification
 
@@ -34,3 +34,7 @@ The PBX itself, SIP carrier, media paths and actual office deployment were not s
 ## Fragment refresh regression
 
 The first Linux CI run reproduced a fragment-refresh alignment failure (25 of 26 tests passed). Fragment navigation now re-aligns the requested target after font layout and hydration. The original deep-link assertion is unchanged; it passed five repeated local runs. A delayed-font navigation regression was added, and the complete local suite now passes 27 tests.
+
+## Mouse effects regression
+
+The mouse toggle previously paused all continuous animations. A regression reproduced that behavior before the fix. Pointer effects now use a separate control; the existing stored preference is preserved. Browser checks confirm background pulses and call-map animation timelines advance with mouse effects off, pointer glow/parallax/ripples stop, and the preference survives reload and navigation. The early preference script is also checked with application scripts blocked. Reduced-motion and visibility controls still pause both kinds of effects. The complete updated local suite passes 28 tests.
