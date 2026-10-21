@@ -1,0 +1,5 @@
+User-Agent: *
+Allow: /
+
+Host: https://munasip.oxog.dev
+Sitemap: https://munasip.oxog.dev/sitemap.xml
