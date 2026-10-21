@@ -397,12 +397,34 @@ test("SVG interface mockups animate independently of mouse effects and respect m
       ),
     )
     .toBeGreaterThan(start + 100);
+  await page.getByRole("tab", { name: "Visual IVR", exact: true }).click();
+  const packet = panel.locator(".mockup-packet").first();
+  const offset = await packet.evaluate(
+    (element) => getComputedStyle(element).strokeDashoffset,
+  );
+  await expect
+    .poll(() =>
+      packet.evaluate((element) => getComputedStyle(element).strokeDashoffset),
+    )
+    .not.toBe(offset);
   await page.locator("#faq").scrollIntoViewIfNeeded();
   await expect(animation).toHaveCSS("animation-play-state", "paused");
+  await expect(packet).toHaveCSS("animation-play-state", "paused");
   await panel.scrollIntoViewIfNeeded();
   await expect(animation).toHaveCSS("animation-play-state", "running");
+  await expect(packet).toHaveCSS("animation-play-state", "running");
+  const wave = page.locator(".softphone-image .mockup-wave").first();
+  await wave.scrollIntoViewIfNeeded();
+  const amplitude = await wave.evaluate(
+    (element) => getComputedStyle(element).transform,
+  );
+  await expect
+    .poll(() => wave.evaluate((element) => getComputedStyle(element).transform))
+    .not.toBe(amplitude);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(animation).toHaveCSS("animation-name", "none");
+  await expect(packet).toHaveCSS("animation-name", "none");
+  await expect(wave).toHaveCSS("animation-name", "none");
   for (const path of ["/docs/ivr/", "/docs/softphone/"]) {
     await page.goto(path);
     const mockups = page.locator(".product-mockup svg[role='img']");

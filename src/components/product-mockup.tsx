@@ -95,19 +95,22 @@ function Pill({
 
 function Wave({ x, y, count = 32 }: { x: number; y: number; count?: number }) {
   return (
-    <g transform={`translate(${x} ${y})`}>
+    <g transform={`translate(${x} ${y})`} className="mockup-waveform">
       {Array.from({ length: count }, (_, i) => {
-        const h = 12 + ((i * 13 + 7) % 39);
+        const h = 20 + ((i * 17 + 11) % 43);
         return (
           <rect
             key={i}
             x={i * 9}
             y={-h / 2}
-            width="4"
+            width="5"
             height={h}
             rx="2"
             className="mockup-wave mockup-motion"
-            style={{ animationDelay: `${i * -0.13}s` }}
+            style={{
+              animationDelay: `${i * -0.19}s`,
+              animationDuration: `${0.72 + (i % 5) * 0.09}s`,
+            }}
           />
         );
       })}
@@ -324,6 +327,12 @@ function FlowNode({
 }
 
 function Flow() {
+  const routes = [
+    "M254 247H295Q320 247 320 222V152Q320 127 345 127H382",
+    "M254 247H382",
+    "M592 247H596Q606 247 606 272V352Q606 377 620 377",
+    "M592 127H740V330",
+  ];
   return (
     <>
       <Card x={202} y={125} w={870} h={518}>
@@ -339,10 +348,28 @@ function Flow() {
         </Label>
         <Pill x={714} y={16} text="Validated" width={130} />
         <g className="mockup-wires">
-          <path d="M254 247H295Q320 247 320 222V152Q320 127 345 127H382M254 247H382M592 247H620Q644 247 644 272V352Q644 377 669 377H682M592 127H740V330" />
+          {routes.map((route) => (
+            <path key={route} d={route} />
+          ))}
         </g>
         <g className="mockup-flow mockup-motion">
-          <path d="M254 247H295Q320 247 320 222V152Q320 127 345 127H382M254 247H382M592 247H620Q644 247 644 272V352Q644 377 669 377H682" />
+          {routes.map((route) => (
+            <path key={route} d={route} />
+          ))}
+        </g>
+        <g className="mockup-packets">
+          {routes.map((route, i) => (
+            <path
+              key={route}
+              d={route}
+              pathLength={100}
+              className="mockup-packet mockup-motion"
+              style={{
+                animationDelay: `${i * -0.7}s`,
+                animationDuration: `${2.4 + i * 0.3}s`,
+              }}
+            />
+          ))}
         </g>
         <FlowNode
           x={44}

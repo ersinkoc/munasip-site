@@ -1160,8 +1160,24 @@ h1 > span {
 }
 .mockup-flow {
   stroke: var(--accent);
-  stroke-dasharray: 8 20;
-  animation: mockup-route 3s linear infinite;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 12 16;
+  animation: mockup-route 1.6s linear infinite;
+}
+.mockup-packets,
+.mockup-waveform {
+  filter: drop-shadow(
+    0 0 3px color-mix(in srgb, var(--accent) 35%, transparent)
+  );
+}
+.mockup-packet {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 7;
+  stroke-linecap: round;
+  stroke-dasharray: 3 97;
+  animation: mockup-packet 2.4s linear infinite;
 }
 .mockup-port {
   fill: var(--surface);
@@ -1196,7 +1212,7 @@ h1 > span {
 .mockup-wave {
   transform-box: fill-box;
   transform-origin: center;
-  animation: mockup-audio 1.4s ease-in-out infinite alternate;
+  animation: mockup-audio 0.9s ease-in-out infinite;
 }
 .mockup-meter,
 .mockup-bar {
@@ -1216,6 +1232,11 @@ h1 > span {
     stroke-dashoffset: -112;
   }
 }
+@keyframes mockup-packet {
+  to {
+    stroke-dashoffset: -100;
+  }
+}
 @keyframes mockup-status {
   0%,
   100% {
@@ -1226,11 +1247,22 @@ h1 > span {
   }
 }
 @keyframes mockup-audio {
-  from {
-    transform: scaleY(0.45);
+  0%,
+  100% {
+    transform: scaleY(0.24);
+    opacity: 0.65;
   }
-  to {
-    transform: scaleY(1);
+  24% {
+    transform: scaleY(1.12);
+    opacity: 1;
+  }
+  48% {
+    transform: scaleY(0.42);
+    opacity: 0.8;
+  }
+  72% {
+    transform: scaleY(0.92);
+    opacity: 1;
   }
 }
 @keyframes mockup-level {
