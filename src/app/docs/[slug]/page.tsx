@@ -57,7 +57,9 @@ export default async function DocPage({
         <p className="doc-summary">{doc.summary}</p>
         <div className="doc-meta">
           <span className="mono">MUNASIP v{site.version}</span>
-          <span>Reviewed 21 October 2026</span>
+          <span>
+            Reviewed {site.reviewed} · v{site.version}
+          </span>
           <a href={sourceDoc(doc.source)}>Upstream reference ↗</a>
         </div>
         <div className="prose">

@@ -1,19 +1,85 @@
+const version = "1.7.5";
+const repo = "https://github.com/MunaSIP/MunaSIP";
+
 export const site = {
   name: "MunaSIP",
   url: "https://munasip.oxog.dev",
-  repo: "https://github.com/MunaSIP/MunaSIP",
+  repo,
   websiteRepo: "https://github.com/ersinkoc/munasip-site",
-  version: "1.6.0",
-  release: "https://github.com/MunaSIP/MunaSIP/releases/tag/v1.6.0",
-  sourceZip: "https://github.com/MunaSIP/MunaSIP/archive/refs/tags/v1.6.0.zip",
-  image: "ghcr.io/munasip/munasip:1.6.0",
-  sourceRevision: "e8b6183afde8fff50e16d4a7a62a892f78986417",
+  version,
+  release: `${repo}/releases/tag/v${version}`,
+  sourceZip: `${repo}/archive/refs/tags/v${version}.zip`,
+  image: `ghcr.io/munasip/munasip:${version}`,
+  sourceRevision: "3f9deec1c3de77a5aeb4d8ac0f3d60153f01d418",
+  developmentRevision: "18e42f6",
+  reviewed: "22 October 2026",
   description:
-    "An open-source company PBX you run yourself. Asterisk calling, a visual IVR designer, browser softphone and one clear admin panel. Deploy on your Linux server with Docker.",
+    "A self-hosted Asterisk PBX for small offices. Connect SIP providers, route calls with visual IVR, and give your team a browser softphone and voicemail inbox. Run it with Docker on your Linux server.",
 };
 
 export const sourceDoc = (file: string) =>
-  `${site.repo}/blob/main/docs/${file}.md`;
+  `${site.repo}/blob/v${site.version}/docs/${file}.md`;
+
+export const releaseHighlights = [
+  {
+    icon: "sound",
+    title: "A voicemail inbox for every extension.",
+    text: "See who called, play the message, mark it read and delete it from the employee portal.",
+  },
+  {
+    icon: "phone",
+    title: "The caller ID your provider expects.",
+    text: "Set the outbound phone number independently of the SIP username used to register your trunk.",
+  },
+  {
+    icon: "shield",
+    title: "Ready means the PBX is ready.",
+    text: "The health endpoint waits for PostgreSQL, Asterisk and the dialplan before reporting the system healthy.",
+  },
+];
+
+export const referenceDocs = [
+  [
+    "FEATURES",
+    "Feature reference",
+    "The supported scope, from extensions to reporting.",
+  ],
+  ["INSTALL", "Installation", "Image tags, volumes, ports and first boot."],
+  ["DEPLOY-VPS", "VPS deployment", "Host identity, media networking and TLS."],
+  [
+    "FLOW-DESIGNER",
+    "Flow designer",
+    "Node types, variables, simulation and versioning.",
+  ],
+  ["TTS", "Text to speech", "Edge Neural, offline Turkish EMA and caching."],
+  [
+    "USER-PORTAL",
+    "Employee portal",
+    "Calling, recordings, voicemail and forwarding.",
+  ],
+  ["API", "API reference", "Authentication, endpoints and webhook events."],
+  [
+    "ARCHITECTURE",
+    "Architecture",
+    "Services, signalling and storage boundaries.",
+  ],
+  [
+    "SERVER-SECURITY",
+    "Server security",
+    "Access controls and operational configuration.",
+  ],
+  ["DATA-MODEL", "Data model", "The records and relationships behind the PBX."],
+  [
+    "TEST-PLAN",
+    "Test plan",
+    "The project's documented verification scenarios.",
+  ],
+  [
+    "SCREENS",
+    "Product workflows",
+    "A reference to the administration screens.",
+  ],
+];
 
 export const dockerCommand = `docker run -d --name munasip \\
   --restart unless-stopped \\
@@ -22,11 +88,11 @@ export const dockerCommand = `docker run -d --name munasip \\
   -v munasip-data:/data \\
   -e EXTERNAL_IP=203.0.113.10 \\
   -e PUBLIC_HOST=pbx.example.com \\
-  ghcr.io/munasip/munasip:1.6.0`;
+  ${site.image}`;
 
 export const composeCommand = `git clone https://github.com/MunaSIP/MunaSIP.git
 cd MunaSIP
-git checkout v1.6.0
+git checkout v${site.version}
 cp .env.example .env
 chmod +x scripts/gen-certs.sh
 ./scripts/gen-certs.sh
@@ -56,6 +122,12 @@ export const docNav = [
     title: "Softphone & portal",
     detail: "Give every extension a home in the browser.",
     icon: "phone",
+  },
+  {
+    slug: "voicemail",
+    title: "Voicemail & forwarding",
+    detail: "Route unanswered calls and manage your messages.",
+    icon: "sound",
   },
   {
     slug: "integrations",

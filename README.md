@@ -44,7 +44,7 @@ pnpm test
 pnpm check:links
 ```
 
-Browser checks cover ten routes at 375, 768, 1024, 1440, 1920, 2560 and 3840px in both themes: viewport overflow, resources, theme persistence/system changes, reduced motion, ripple lifecycle, mobile navigation, keyboard screen tabs, route choices, clipboard success/failure, direct links and refresh. axe checks all pages and the appearance panel for WCAG A/AA semantics and contrast. Reports and screenshots are ignored local artifacts.
+Browser checks cover twelve routes at 375, 768, 1024, 1440, 1920, 2560 and 3840px in both themes: viewport overflow, resources, theme persistence/system changes, reduced motion, ripple lifecycle, mobile navigation, keyboard screen tabs, release-to-install navigation, clipboard success/failure, direct links and refresh. axe checks all pages and the appearance panel for WCAG A/AA semantics and contrast. Reports and screenshots are ignored local artifacts.
 
 `check:export` validates canonical URLs, old anchors, local links/assets, sitemap, robots, `.nojekyll`, the custom-domain CNAME and 404. `check:links` separately verifies external destinations with live HEAD requests.
 
@@ -52,10 +52,11 @@ Windows builds currently reproduce [Next #85374](https://github.com/vercel/next.
 
 ## Content and design
 
-- Home, downloads, brand assets, documentation index and six full guides.
-- Original SVG logos, social PNG, Apple icon and legacy project captures preserved at their old URLs. The website presents nine theme-aware SVG interface mockups instead of screenshots, with call flows, audio waves and activity indicators. They use illustrative sample data.
+- Home, downloads, release updates, brand assets, documentation index and seven full guides, including voicemail and forwarding. The reference directory links twelve official documents to the pinned release source.
+- Release v1.7.5 and post-release main-branch changes are clearly separated. Image, source archive, Compose commands and guide references use the central release value in `src/lib/site.ts`.
+- Original SVG logos, social PNG, Apple icon and legacy project captures preserved at their old URLs. The website presents ten theme-aware SVG interface mockups instead of screenshots, including the voicemail inbox, with call flows, audio waves and activity indicators. They use illustrative sample data.
 - Locally served Space Grotesk and JetBrains Mono, with Latin/Turkish coverage. Central variables include the requested Quicksand token; no unnecessary third font is loaded.
-- Shared fluid container up to 1720px, centralized spacing and 4/6/8px component corners, light/dark tokens.
+- Shared fluid container up to 1440px, centralized spacing and 4/6/8px component corners, light/dark tokens.
 - Light, Dark and System appearance tiles with native radio behavior, persistent preferences and an early theme script.
 - Mouse-icon control for pointer response and bounded click ripples. Turning mouse effects off removes their listeners/frames while continuous background and diagram animations keep running. Reduced motion and hidden tabs pause all effects; offscreen diagram motion pauses.
 - Original call-route SVG, Compose service map, clear example labels and a genuine screen gallery. No live PBX calls or microphone requests.

@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { Icon } from "./icon";
 import { ProductMockup, type MockupScreen } from "./product-mockup";
+import { site } from "@/lib/site";
 
 const screens: {
   name: string;
@@ -35,6 +36,14 @@ const screens: {
     title: "Follow the whole conversation.",
     text: "Open a call row to inspect its IVR timeline. Filter records, export CSV and find the associated recording.",
     alt: "MunaSIP call detail records with filters, call direction and recording controls",
+  },
+  {
+    name: "Voicemail",
+    file: "voicemail",
+    icon: "sound",
+    title: "Miss the call. Keep the message.",
+    text: `Open your extension’s mailbox, see who called, listen to the message and manage its read state. Included in v${site.version}.`,
+    alt: "MunaSIP employee voicemail inbox with caller details, unread messages and a playback panel",
   },
   {
     name: "Queues",
@@ -151,7 +160,9 @@ export function ScreenTour() {
             <h3>{screen.title}</h3>
             <p>{screen.text}</p>
           </div>
-          <span className="mono">0{selected + 1} / 07</span>
+          <span className="mono">
+            0{selected + 1} / 0{screens.length}
+          </span>
         </div>
       </div>
     </div>

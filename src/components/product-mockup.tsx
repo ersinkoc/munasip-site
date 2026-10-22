@@ -5,6 +5,7 @@ export type MockupScreen =
   | "dashboard"
   | "ivr-designer"
   | "cdr"
+  | "voicemail"
   | "queues"
   | "extensions"
   | "reports"
@@ -16,6 +17,7 @@ const titles: Record<MockupScreen, string> = {
   dashboard: "Live dashboard",
   "ivr-designer": "Visual IVR designer",
   cdr: "Call records",
+  voicemail: "Your voicemail",
   queues: "Call queues",
   extensions: "Team extensions",
   reports: "Call reports",
@@ -130,7 +132,7 @@ function Metrics({ report = false }: { report?: boolean }) {
           ]
         : [
             ["Active calls", "08", "4 inbound · 4 outbound"],
-            ["Available team", "24", "32 extensions online"],
+            ["Available team", "12", "16 extensions online"],
             ["Calls today", "186", "+18% from yesterday"],
             ["Service level", "98.2%", "Answered within 30s"],
           ]
@@ -818,6 +820,62 @@ function Softphone() {
   );
 }
 
+function Voicemail() {
+  return (
+    <>
+      <Card x={202} y={125} w={870} h={174}>
+        <Pill x={22} y={18} text="MESSAGE OPEN" width={148} />
+        <Label x={22} y={83} kind="strong" size={25}>
+          +44 20 7946 0128
+        </Label>
+        <Label x={22} y={111} kind="muted" size={12}>
+          Today, 10:24 · Extension 101
+        </Label>
+        <Wave x={487} y={81} count={36} />
+        <Label x={487} y={130} kind="muted" size={11}>
+          00:18 / 00:42 · Sample playback
+        </Label>
+        <Pill x={22} y={131} text="Read" width={78} />
+        <Pill x={114} y={131} text="Delete message" width={154} tone="muted" />
+      </Card>
+      <Card x={202} y={319} w={870} h={324}>
+        <Label x={22} y={36} kind="strong">
+          Messages for your extension
+        </Label>
+        <Label x={22} y={62} kind="muted" size={12}>
+          Select a caller to listen. Your messages stay with your PBX.
+        </Label>
+        {[
+          ["+44 20 7946 0128", "Today, 10:24", "Read"],
+          ["+44 20 7946 0186", "Today, 09:58", "Unread"],
+          ["Maya Chen · 201", "Yesterday, 16:42", "Unread"],
+        ].map(([caller, at, state], i) => (
+          <g key={caller} transform={`translate(22 ${113 + i * 74})`}>
+            <path d="M0 35H826" className="mockup-grid" />
+            <circle cx="18" cy="0" r="18" className="mockup-avatar" />
+            <Label x={9} y={5} kind="accent" size={15}>
+              ♪
+            </Label>
+            <Label x={54} y={-2} size={15}>
+              {caller}
+            </Label>
+            <Label x={54} y={20} kind="muted" size={11}>
+              {at}
+            </Label>
+            <Pill
+              x={698}
+              y={-16}
+              text={state}
+              width={126}
+              tone={state === "Unread" ? "accent" : "muted"}
+            />
+          </g>
+        ))}
+      </Card>
+    </>
+  );
+}
+
 export function ProductMockup({
   screen,
   label,
@@ -832,6 +890,7 @@ export function ProductMockup({
     "Overview",
     "Call flows",
     "Call records",
+    "Voicemail",
     "Queues",
     "Extensions",
     "Reports",
@@ -841,6 +900,7 @@ export function ProductMockup({
     "dashboard",
     "ivr-designer",
     "cdr",
+    "voicemail",
     "queues",
     "extensions",
     "reports",
@@ -850,6 +910,7 @@ export function ProductMockup({
     dashboard: <Dashboard />,
     "ivr-designer": <Flow />,
     cdr: <Records />,
+    voicemail: <Voicemail />,
     queues: <Queues />,
     extensions: <Records extensions />,
     reports: <Reports />,
@@ -926,7 +987,9 @@ export function ProductMockup({
           All systems ready
         </Label>
         <Label x={202} y={35} kind="muted" size={10}>
-          {screen === "softphone" ? "EMPLOYEE PORTAL" : "WORKSPACE / ADMIN"}
+          {screen === "softphone" || screen === "voicemail"
+            ? "EMPLOYEE PORTAL"
+            : "WORKSPACE / ADMIN"}
         </Label>
         <Label x={202} y={60} kind="strong" size={22}>
           {title}

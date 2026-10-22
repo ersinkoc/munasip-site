@@ -1,5 +1,17 @@
 # Verification record
 
+## Repository refresh — 22 October 2026
+
+The website now uses the official v1.7.5 release snapshot (`3f9deec1c3de77a5aeb4d8ac0f3d60153f01d418`) and separately describes post-release main-branch work through `18e42f6`.
+
+- Format, ESLint, TypeScript and production export checks pass. The output contains twelve content routes, seven guides and 576 checked local links/assets; twelve Windows RSC aliases are normalized.
+- The full browser suite passes **30 tests**, including twelve routes at seven widths in both themes, accessibility checks, the eight-tab SVG gallery and the release → download → source-build → voicemail-guide flow.
+- All **22 external links** pass live HEAD checks. The v1.7.5 GHCR manifest returns HTTP 200; digest `sha256:eca7e22917c0ba8696b7ba0ea33f2a26aa2f26ea6fc5513eb63e7a0d6966c968`.
+- Homepage, release overview, voicemail SVG and updates page renders were visually reviewed at 375px and 1440px in both themes. The fluid layout caps at 1440px.
+- No live PBX, carrier registration, voicemail storage or audio calls were run by this website update. The illustrations use sample data.
+
+## Earlier verification history
+
 21 October 2026. Local checkout: `D:\Codebox\munasip-site`, based on website commit `9c670e33329dee6e628145525e2684fb0ed9a489`. This records local verification; the user-selected destination is now `ersinkoc/munasip-site` at `https://munasip.oxog.dev/`.
 
 ## Passed locally

@@ -6,6 +6,7 @@ const root = "out";
 const routes = [
   "/",
   "/download/",
+  "/updates/",
   "/brand/",
   "/docs/",
   ...[
@@ -13,6 +14,7 @@ const routes = [
     "architecture",
     "ivr",
     "softphone",
+    "voicemail",
     "integrations",
     "security",
   ].map((p) => `/docs/${p}/`),

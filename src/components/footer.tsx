@@ -36,6 +36,7 @@ export function Footer() {
             <Link href="/#ivr">Visual IVR</Link>
             <Link href="/#softphone">Browser softphone</Link>
             <Link href="/download/">Download</Link>
+            <Link href="/updates/">What’s new</Link>
             <a href={site.release}>Release {site.version}</a>
           </div>
           <div>

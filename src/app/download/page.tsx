@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CodeBlock } from "@/components/code-block";
 import { Icon } from "@/components/icon";
-import { dockerCommand, site } from "@/lib/site";
+import { dockerCommand, composeCommand, site } from "@/lib/site";
 import { pageMetadata } from "@/lib/metadata";
 
 export const metadata: Metadata = pageMetadata(
@@ -38,6 +38,11 @@ export default function Download() {
             <span className="mono">MIT LICENSE</span>
           </div>
           <h2>Pull the prebuilt image.</h2>
+          <p className="download-release-note">
+            v{site.version} adds the employee voicemail inbox, provider caller
+            ID and PBX readiness checks.{" "}
+            <Link href="/updates/">Read what’s new →</Link>
+          </p>
           <p>
             The recommended starting point for a Linux x86-64 Docker host. Pin
             the release tag, persist <code>/data</code> and configure HTTPS and
@@ -92,6 +97,13 @@ export default function Download() {
                 Build with Compose <Icon name="arrow" />
               </Link>
             </div>
+            <details className="source-install-details">
+              <summary>Show the source install commands</summary>
+              <CodeBlock
+                code={composeCommand}
+                title="Build from the release source"
+              />
+            </details>
           </article>
           <article className="download-option">
             <Icon name="server" />

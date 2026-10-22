@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Architecture } from "@/components/architecture";
 import { CodeBlock } from "@/components/code-block";
 import { Icon } from "@/components/icon";
-import { composeCommand, dockerCommand, sourceDoc } from "./site";
+import { composeCommand, dockerCommand, sourceDoc, site } from "./site";
 
 function Callout({
   children,
@@ -109,7 +109,7 @@ export const docs: Record<
             <p>
               The all-in-one image contains the web panel, API, Asterisk,
               embedded PostgreSQL and speech engines. The command below pins
-              release 1.6.0. Replace <code>203.0.113.10</code> and{" "}
+              release {site.version}. Replace <code>203.0.113.10</code> and{" "}
               <code>pbx.example.com</code> with your actual public IP and
               hostname.
             </p>
@@ -215,6 +215,28 @@ export const docs: Record<
         ),
       },
       {
+        id: "readiness",
+        title: "Check the PBX, not just the web page",
+        content: (
+          <>
+            <p>
+              From v1.7.5, the health endpoint stays unhealthy until the
+              database, Asterisk and generated dialplan are ready. Wait for it
+              before testing registration or placing a call.
+            </p>
+            <CodeBlock
+              code="curl --fail https://pbx.example.com/api/v1/health"
+              title="Check service readiness"
+            />
+            <p>
+              Use your own hostname. If the endpoint is not healthy, inspect the
+              container logs and persistent volume before treating a reachable
+              login page as a working PBX.
+            </p>
+          </>
+        ),
+      },
+      {
         id: "first-call",
         title: "Set up the first conversation",
         content: (
@@ -268,7 +290,7 @@ export const docs: Record<
               Pulling an image alone does not replace a running container.
             </p>
             <CodeBlock
-              code="docker pull ghcr.io/munasip/munasip:1.6.0\n# Recreate the service with the same /data volume and configuration."
+              code={`docker pull ${site.image}\n# Recreate the service with the same /data volume and configuration.`}
               title="image update"
             />
             <p>
@@ -659,7 +681,9 @@ export const docs: Record<
                 allowed listening. The portal offers listening, not an admin
                 download control.
               </li>
-              <li>Voicemail playback and read state.</li>
+              <li>
+                Voicemail inbox with caller ID, playback, read state and delete.
+              </li>
               <li>No-answer, busy and unavailable forwarding, plus DND.</li>
               <li>Directory presence and notifications for incoming calls.</li>
             </ul>
@@ -706,6 +730,101 @@ export const docs: Record<
               does provide documented provisioning profiles for Yealink, Fanvil
               and Grandstream desk phones.
             </p>
+          </>
+        ),
+      },
+    ],
+  },
+  voicemail: {
+    title: "Every message, in reach.",
+    summary:
+      "Send unanswered calls to an extension's mailbox, then listen and manage messages from the employee portal. Available in v1.7.5.",
+    source: "USER-PORTAL",
+    sections: [
+      {
+        id: "routing",
+        title: "Give unanswered calls a destination",
+        content: (
+          <>
+            <p>
+              Choose voicemail as a destination in your call flow or extension
+              forwarding. No-answer, busy and unavailable forwarding are
+              separate rules, so you can choose how each case is handled.
+            </p>
+            <p>
+              Extension permissions still apply. Forwarding to a mobile or
+              external number requires the administrator to allow that
+              destination.
+            </p>
+            <Link className="text-link" href="/docs/ivr/">
+              Connect a voicemail step in your IVR →
+            </Link>
+          </>
+        ),
+      },
+      {
+        id: "inbox",
+        title: "Open your own voicemail inbox",
+        content: (
+          <>
+            <p>
+              Sign in with your extension number and open Voicemail. The v
+              {site.version} portal lists the caller and message time,
+              identifies unread messages, and opens a player when you select a
+              message.
+            </p>
+            <figure className="image-frame">
+              <ProductMockup screen="voicemail" />
+              <figcaption>
+                Illustrative mailbox with sample callers. Playback here is an
+                animation, not live audio.
+              </figcaption>
+            </figure>
+            <ol>
+              <li>Select a message to open its player and mark it read.</li>
+              <li>
+                Listen in the portal; the mailbox belongs to the signed-in
+                extension.
+              </li>
+              <li>
+                Use Delete and confirm when you want to remove the message.
+              </li>
+            </ol>
+          </>
+        ),
+      },
+      {
+        id: "recordings",
+        title: "A mailbox is different from call recordings",
+        content: (
+          <>
+            <p>
+              Voicemail is a message left for an extension. Call recordings are
+              recordings of conversations the employee participated in, subject
+              to the administrator's listening permissions. The portal's
+              call-recording player is listen-only.
+            </p>
+            <p>
+              Back up the persistent data and recording storage together.
+              Recreating a container with its existing volume preserves state;
+              deleting the volume does not.
+            </p>
+          </>
+        ),
+      },
+      {
+        id: "development",
+        title: "Follow the next portal improvements",
+        content: (
+          <>
+            <p>
+              The main branch adds inline waveforms, unheard counts and saved
+              voicemail greetings. These post-release changes are tracked
+              separately from the v{site.version} snapshot used by these guides.
+            </p>
+            <Link className="text-link" href="/updates/#main-work">
+              See what is in development →
+            </Link>
           </>
         ),
       },

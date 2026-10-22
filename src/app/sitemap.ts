@@ -5,6 +5,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     "/",
     "/download/",
+    "/updates/",
     "/brand/",
     "/docs/",
     ...docNav.map(({ slug }) => `/docs/${slug}/`),

@@ -5,7 +5,7 @@ import { CallMap } from "@/components/call-map";
 import { ScreenTour } from "@/components/screen-tour";
 import { CodeBlock } from "@/components/code-block";
 import { Architecture } from "@/components/architecture";
-import { site, dockerCommand, sourceDoc } from "@/lib/site";
+import { site, dockerCommand, sourceDoc, releaseHighlights } from "@/lib/site";
 
 const features = [
   {
@@ -35,6 +35,34 @@ const features = [
     title: "Know how the day went.",
     text: "Live call activity, detailed call records and recording playback. Open a call’s IVR timeline and see the path it took.",
     tags: ["Call timelines", "Reports", "TV mode"],
+  },
+  {
+    icon: "phone",
+    label: "05 / YOUR EXISTING CONNECTIONS",
+    title: "Bring your SIP provider.",
+    text: "Registered or IP-based trunks, DID routing and outbound failover. Set the provider caller ID separately from the registration username.",
+    tags: ["Provider caller ID", "Inbound DIDs", "Failover"],
+  },
+  {
+    icon: "sound",
+    label: "06 / AFTER THE RING",
+    title: "Leave room for a message.",
+    text: "Send unanswered calls to an extension’s voicemail. Employees can see the caller, play messages and manage their own inbox in the portal.",
+    tags: ["Voicemail inbox", "Read state", "Forwarding"],
+  },
+  {
+    icon: "code",
+    label: "07 / CONNECT YOUR WORKFLOW",
+    title: "Put calls in context.",
+    text: "Use REST endpoints, signed webhooks and visual API lookups to connect your existing tools. Embed a browser call button on your website.",
+    tags: ["REST API", "Webhooks", "Call widget"],
+  },
+  {
+    icon: "shield",
+    label: "08 / OPERATE WITH CLARITY",
+    title: "Know when you’re ready.",
+    text: "A health gate checks the database, Asterisk and dialplan. Manage HTTPS, optional admin 2FA, access rules and persistent data on your infrastructure.",
+    tags: ["Readiness gate", "Automatic SSL", "Access controls"],
   },
 ];
 
@@ -91,7 +119,7 @@ export default function Home() {
             <span className="status-dot" />
             <span className="mono">v{site.version}</span>
             <span className="badge-divider" />
-            Open source. Open line.
+            Voicemail. Caller ID. A stronger core.
             <Icon name="arrow" />
           </a>
           <p className="eyebrow">THE SELF-HOSTED COMPANY PBX</p>
@@ -103,12 +131,13 @@ export default function Home() {
             <span>Your control.</span>
           </h1>
           <p className="hero-lead">
-            A phone system that feels like yours.
-            <br className="desktop-break" /> Because it is.
+            Your office phone system.
+            <br className="desktop-break" /> On your own infrastructure.
           </p>
           <p className="hero-description">
-            Bring your office calls, visual IVR and browser softphone together.
-            One open-source PBX, running on your own server.
+            Connect your SIP provider, route calls visually and give every desk
+            a browser phone and voicemail inbox. Asterisk-powered, open source,
+            and built for small offices of around 20 extensions.
           </p>
           <div className="button-row">
             <Link className="button primary" href="/download/">
@@ -156,6 +185,44 @@ export default function Home() {
           </span>
         </div>
       </div>
+
+      <section
+        className="release-spotlight container"
+        aria-labelledby="release-intro"
+      >
+        <div className="release-heading">
+          <div>
+            <p className="eyebrow">NOW AVAILABLE / v{site.version}</p>
+            <h2 id="release-intro">More of the everyday, covered.</h2>
+          </div>
+          <Link className="text-link" href="/updates/">
+            See what changed <Icon name="arrow" />
+          </Link>
+        </div>
+        <div className="release-cards">
+          {releaseHighlights.map((item) => (
+            <article key={item.title}>
+              <Icon name={item.icon} />
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))}
+        </div>
+        <nav className="product-shortcuts" aria-label="Explore MunaSIP">
+          <a href="#panel">
+            Explore the interface <Icon name="arrow" />
+          </a>
+          <a href="#ivr">
+            Follow a call flow <Icon name="arrow" />
+          </a>
+          <Link href="/docs/voicemail/">
+            Find your messages <Icon name="arrow" />
+          </Link>
+          <a href="#install">
+            Plan your install <Icon name="arrow" />
+          </a>
+        </nav>
+      </section>
 
       <section className="section container" id="panel">
         <div className="section-heading">
@@ -333,7 +400,7 @@ export default function Home() {
                 <Icon name="check" /> Directory with live coworker presence
               </li>
               <li>
-                <Icon name="check" /> Your calls, recordings and voicemail
+                <Icon name="check" /> Your calls, recordings and voicemail inbox
               </li>
               <li>
                 <Icon name="check" /> Desk phone and browser can ring together
@@ -341,6 +408,12 @@ export default function Home() {
             </ul>
             <Link className="text-link" href="/docs/softphone/">
               Take a closer look <Icon name="arrow" />
+            </Link>
+            <Link
+              className="text-link portal-mailbox-link"
+              href="/docs/voicemail/"
+            >
+              Explore the voicemail inbox <Icon name="arrow" />
             </Link>
             <p className="softphone-note">
               HTTPS and microphone access required. Reloading the browser ends

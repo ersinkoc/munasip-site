@@ -4,12 +4,14 @@ import AxeBuilder from "@axe-core/playwright";
 const routes = [
   "/",
   "/download/",
+  "/updates/",
   "/brand/",
   "/docs/",
   "/docs/getting-started/",
   "/docs/architecture/",
   "/docs/ivr/",
   "/docs/softphone/",
+  "/docs/voicemail/",
   "/docs/integrations/",
   "/docs/security/",
 ];
@@ -351,6 +353,7 @@ test("screen tabs work with keyboard and route choices update the explanation", 
   );
   for (const name of [
     "Call logs",
+    "Voicemail",
     "Queues",
     "Extensions",
     "Reports",
@@ -443,7 +446,7 @@ test("copy buttons copy the exact install command and handle denied clipboard", 
   await page.getByRole("button", { name: "Copy install MunaSIP" }).click();
   await expect(page.getByRole("status")).toContainText("Copied to clipboard");
   const clipboard = await page.evaluate(() => navigator.clipboard.readText());
-  expect(clipboard).toContain("ghcr.io/munasip/munasip:1.6.0");
+  expect(clipboard).toContain("ghcr.io/munasip/munasip:1.7.5");
   expect(clipboard).toContain("-v munasip-data:/data");
   await page.evaluate(() => {
     Object.defineProperty(navigator.clipboard, "writeText", {
@@ -456,6 +459,51 @@ test("copy buttons copy the exact install command and handle denied clipboard", 
   expect(
     await page.evaluate(() => window.getSelection()?.toString()),
   ).toContain("docker run");
+});
+
+test("release notes connect the published image, source build and voicemail guide", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page
+    .getByRole("link", { name: "See what changed", exact: true })
+    .click();
+  await expect(
+    page.getByRole("heading", { name: "MunaSIP 1.7.5", exact: true }),
+  ).toBeVisible();
+  await expect(page.locator(".release-detail")).toContainText(
+    "voicemail inbox",
+  );
+  await expect(page.locator(".development-note")).toContainText(
+    "MAIN BRANCH / AFTER v1.7.5",
+  );
+  await page
+    .getByRole("link", { name: "Install MunaSIP 1.7.5", exact: true })
+    .click();
+  await expect(page.locator(".download-summary")).toContainText(
+    "Current release: v1.7.5",
+  );
+  await page
+    .getByText("Show the source install commands", { exact: true })
+    .click();
+  await expect(page.locator(".source-install-details")).toContainText(
+    "git checkout v1.7.5",
+  );
+  await page.goto("/docs/voicemail/");
+  await expect(
+    page.getByRole("heading", {
+      name: "Every message, in reach.",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(page.locator('svg[data-screen="voicemail"]')).toBeVisible();
+  await page.goto("/docs/");
+  await expect(
+    page.getByRole("link", { name: /API reference Authentication/ }),
+  ).toHaveAttribute(
+    "href",
+    "https://github.com/MunaSIP/MunaSIP/blob/v1.7.5/docs/API.md",
+  );
 });
 
 test("static deep links refresh and the custom 404 returns 404", async ({

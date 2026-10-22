@@ -1,5 +1,15 @@
 # Source and design review
 
+## Repository refresh — 22 October 2026
+
+The official repository was fetched again at `18e42f6` (main). The latest published release is [v1.7.5](https://github.com/MunaSIP/MunaSIP/releases/tag/v1.7.5), commit `3f9deec1c3de77a5aeb4d8ac0f3d60153f01d418`. Its release notes and tagged portal/trunk/readiness sources support the voicemail inbox, provider caller ID and database/Asterisk/dialplan health gate. The `1.7.5` GHCR manifest returns HTTP 200 with digest `sha256:eca7e22917c0ba8696b7ba0ea33f2a26aa2f26ea6fc5513eb63e7a0d6966c968`.
+
+Post-tag changes were reviewed separately: inline mailbox waveforms and counts, saved greetings, missed-call acknowledgement, portal layout/settings updates, and softphone disconnection/re-registration. The updates page labels these as main-branch work, not part of the v1.7.5 release snapshot. Main publishes the `main` image tag; release tags publish version tags and `latest`.
+
+The refresh adds a release page, voicemail guide and SVG concept, eight feature categories, an eight-tab gallery and twelve pinned upstream references. Source-tag links replace moving main-branch guide references. The layout cap is now 1440px for a more compact presentation. Existing motion preferences, deep links, original media URLs and branding remain supported.
+
+## Original implementation review
+
 Reviewed 21 October 2026. Product claims come from official MunaSIP sources.
 
 ## Repository and hosting investigation

@@ -100,7 +100,7 @@ export function Header() {
           }}
         >
           <Link href="/#features">Features</Link>
-          <Link href="/#how-it-works">How it works</Link>
+          <Link href="/updates/">What’s new</Link>
           <Link href="/docs/">Documentation</Link>
           <Link href="/download/">Download</Link>
         </nav>
